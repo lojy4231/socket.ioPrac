@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- socket.IO 연결 -->
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    
+    <title>Hello Socket.io!</title>
+  </head>
+  <body>
+    <div class="display-container">
+      <ul class="chatting-list"></ul>
+    </div>
+    <div class="input-container">
+      <input type="text" class="chatting-input" />
+      <button class="send-button">전송</button>
+    </div>
+
+    <script>
+      // 서버와 클라이언트 socket 연결
+      const socket = io("ws://localhost:3000");
+      socket.on("connect", () => {
+        socket.send("Hello!");
+      });
+
+     // 테스트용 채팅창 채팅입력창 전송 버튼
+      const chatList = document.querySelector(".chatting-list");
+      const chatInput = document.querySelector(".chatting-input");
+      const sendButton = document.querySelector(".send-button");
+
+      // 전송버튼 클릭시 채팅 메세지는 서버로 보냄
+      sendButton.addEventListener("click", () => {
+        const param = {
+          msg: chatInput.value,
+        };
+        socket.emit("chatting", param);
+      });
+
+      // 클라이언트가 보낸 메세지를 서버에서 받아서 다시 클라이언트에 뿌려줌
+      socket.on("chatting", (data) => {
+        const li = document.createElement('li');
+        li.innerText = `${data.msg}`;
+        chatList.appendChild(li)
+      });
+
+
+
+    </script>
+  </body>
+</html>
