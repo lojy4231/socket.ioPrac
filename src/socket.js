@@ -1,4 +1,5 @@
 const socketIo = require('socket.io');
+const { Chat } = require("../models");
 
 module.exports = (http) => {
     const io = socketIo(http, {
@@ -20,6 +21,14 @@ module.exports = (http) => {
 
             socket.on('chatting', (data) => {
                 io.emit('chatting', data);
+
+                const chat = new Chat({ nickname: data.name, chat: data.message });
+                chat.save(function(err,data){
+                    if (err){
+                        console.log("error",err)
+                    }
+                    console.log('성공',data);
+                });
             });
 
             // 클라이언트가 나갔을 때
